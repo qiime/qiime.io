@@ -1,0 +1,23 @@
+Package: qiime.io
+Version: 0.1.0
+Date: 2013-05-13
+Title: Support for loading and interacting with QIIME files in R.
+Description: Describe QIIME, what it's for, and why
+    we need a package for this.
+Maintainer: Paul J. McMurdie <mcmurdie@stanford.edu>
+Author: Dan Knights <dan.knights@gmail.com> and
+    Paul J. McMurdie <mcmurdie@stanford.edu>,
+    with contributions from
+    Kyle Bittinger <kylebittinger@gmail.com>,
+    et al.
+License: AGPL-3
+Depends:
+    R (>= 3.0.0),
+    methods
+Suggests:
+    testthat (>= 0.7.1)
+URL: http://qiime.github.io/qiime.io/
+BugReports: https://github.com/qiime/qiime.io/issues
+Collate:
+    'allPackage.R'
+    'I-methods.r'

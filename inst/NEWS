@@ -1,0 +1,12 @@
+qiime.io
+===========
+ - latest features
+
+
+- qiime.io v0.1 - passes build test. First draft of documentation.
+ Still needs
+ - example data
+ - unit tests
+ - function doc examples
+ - a vignette (.Rmd)
+
