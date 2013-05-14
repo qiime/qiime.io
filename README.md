@@ -1,4 +1,4 @@
 qiime.io
 ========
 
-Experimental support for loading and interacting with QIIME files in R. 
+Support for loading and interacting with QIIME files in R. 

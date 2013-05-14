@@ -1,0 +1,5 @@
+export(load.qiime.distance.matrix)
+export(load.qiime.mapping.file)
+export(load.qiime.otu.table)
+export(load.qiime.taxon.table)
+export(remove.nonoverlapping.samples)
