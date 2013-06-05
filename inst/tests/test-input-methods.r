@@ -89,3 +89,36 @@ test_that("Minimal distance matrix is loaded correctly", {
 })
 
 
+context("Non-overlapping samples")
+
+test_that("Non-overlapping samples are properly removed", {
+  map <- data.frame(
+    BarcodeSequence="AACCGGTT",
+    LinkerPrimerSequence="ACGT",
+    Description="Test sample")
+  rownames(map) <- "A.1"
+
+  otus <- matrix(c(2.0, 1.0, 0.0, 0.0, 0.0, 0.0), nrow=2)
+  rownames(otus) <- c("A.1", "B.1")
+  
+  taxa <- matrix(c(0.13, 0.03, 0.17, 0.22), nrow=2)
+  rownames(taxa) <- c("A.1", "B.1")
+  
+  distmat <- matrix(c(0.0, 0.8, 0.7, 0.8, 0.0, 0.6, 0.7, 0.6, 0.0), nrow=3)
+  rownames(distmat) <- c("A.1", "B.1", "C.1")
+  colnames(distmat) <- c("A.1", "B.1", "C.1")
+  
+  observed_nomap <- remove.nonoverlapping.samples(
+    otus=otus, taxa=taxa, distmat=distmat)
+  expect_equal(observed_nomap$map, NULL)
+  expect_equal(rownames(observed_nomap$otus), c("A.1", "B.1"))
+  expect_equal(rownames(observed_nomap$taxa), c("A.1", "B.1"))
+  expect_equal(rownames(observed_nomap$distmat), c("A.1", "B.1"))
+  
+  observed_map <- remove.nonoverlapping.samples(
+    map=map, otus=otus, taxa=taxa, distmat=distmat)
+  expect_equal(rownames(observed_map$map), "A.1")
+  expect_equal(rownames(observed_map$otus), "A.1")
+  expect_equal(rownames(observed_map$taxa), "A.1")
+  expect_equal(rownames(observed_map$distmat), "A.1")
+})
