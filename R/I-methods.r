@@ -144,7 +144,7 @@
       # have occurred due to dropped samples
       if(i == 1) objects[[i]] <- droplevels(objects[[i]])
       # for distance matrix, get subset of columns too
-      if(i == 4) objects[[i]] <- objects[[i]][,IDs]
+      if(i == 4) objects[[i]] <- objects[[i]][,IDs,drop=F]
     }
   }
   
