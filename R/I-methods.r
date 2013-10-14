@@ -168,7 +168,8 @@
   # read the rest of the table
   datatable <- read.table(filepath, sep='\t',
                           skip=header.index, comment.char='#', quote='"',
-                          header=FALSE, row.names=1, check.names=FALSE)
+                          header=FALSE, row.names=1, check.names=FALSE,
+                          strip.white=TRUE)
   
   # set column names using header
   colnames(datatable) <- header[-1]

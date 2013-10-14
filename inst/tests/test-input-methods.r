@@ -46,6 +46,19 @@ test_that("Minimal mapping file is loaded correctly", {
   unlink(map_fp)
 })
 
+test_that("Whitespace is stripped from fields in mapping file", {
+  map_fp <- tempfile()
+  writeLines(c("SampleID\tA\tB", "A.1 \t val1\tval2 "), map_fp)
+
+  expected_df <- data.frame(A="val1", B="val2")
+  rownames(expected_df) <- "A.1"
+
+  print(colnames(expected_df))
+  expect_equal(load.qiime.mapping.file(map_fp), expected_df)
+
+  unlink(map_fp)
+})
+
 
 context("Taxon table")
 
