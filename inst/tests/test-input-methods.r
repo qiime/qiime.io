@@ -70,6 +70,18 @@ test_that("Comments are ignored in mapping file", {
   unlink(map_fp)
 })
 
+test_that("Double quotes are stripped from values in mapping file", {
+  map_fp <- tempfile()
+  writeLines(c("#SampleID\tA\tB", "w\t\"x\"\ty"), map_fp)
+
+  expected_df <- data.frame(A="x", B="y")
+  rownames(expected_df) <- "w"
+
+  expect_equal(load.qiime.mapping.file(map_fp), expected_df)
+
+  unlink(map_fp)
+})
+
 
 context("Taxon table")
 
