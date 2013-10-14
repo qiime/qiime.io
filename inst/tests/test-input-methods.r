@@ -48,12 +48,23 @@ test_that("Minimal mapping file is loaded correctly", {
 
 test_that("Whitespace is stripped from fields in mapping file", {
   map_fp <- tempfile()
-  writeLines(c("SampleID\tA\tB", "A.1 \t val1\tval2 "), map_fp)
+  writeLines(c("#SampleID\tA\tB", "A.1 \t val1\tval2 "), map_fp)
 
   expected_df <- data.frame(A="val1", B="val2")
   rownames(expected_df) <- "A.1"
 
-  print(colnames(expected_df))
+  expect_equal(load.qiime.mapping.file(map_fp), expected_df)
+
+  unlink(map_fp)
+})
+
+test_that("Comments are ignored in mapping file", {
+  map_fp <- tempfile()
+  writeLines(c("SampleID\tA\tB", "# Comment 1", "w\tx\ty", "#C2"), map_fp)
+
+  expected_df <- data.frame(A="x", B="y")
+  rownames(expected_df) <- "w"
+
   expect_equal(load.qiime.mapping.file(map_fp), expected_df)
 
   unlink(map_fp)
