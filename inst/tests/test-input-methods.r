@@ -46,6 +46,70 @@ test_that("Minimal mapping file is loaded correctly", {
   unlink(map_fp)
 })
 
+test_that("Whitespace is stripped from fields in mapping file", {
+  map_fp <- tempfile()
+  writeLines(c("#SampleID\tA\tB", "A.1 \t val1\tval2 "), map_fp)
+
+  expected_df <- data.frame(A="val1", B="val2")
+  rownames(expected_df) <- "A.1"
+
+  expect_equal(load.qiime.mapping.file(map_fp), expected_df)
+
+  unlink(map_fp)
+})
+
+test_that("Comments are ignored in mapping file", {
+  map_fp <- tempfile()
+  writeLines(c("#SampleID\tA\tB", "# Comment 1", "w\tx\ty", "#C2"), map_fp)
+
+  expected_df <- data.frame(A="x", B="y")
+  rownames(expected_df) <- "w"
+
+  expect_equal(load.qiime.mapping.file(map_fp), expected_df)
+
+  unlink(map_fp)
+})
+
+test_that("Double quotes are stripped from values in mapping file", {
+  map_fp <- tempfile()
+  writeLines(c("#SampleID\tA\tB", "w\t\"x\"\ty"), map_fp)
+
+  expected_df <- data.frame(A="x", B="y")
+  rownames(expected_df) <- "w"
+
+  expect_equal(load.qiime.mapping.file(map_fp), expected_df)
+
+  unlink(map_fp)
+})
+
+test_that("Empty mapping file produces error", {
+  empty_fp <- tempfile()
+  file.create(empty_fp)
+  expect_error(load.qiime.mapping.file(empty_fp), "empty")
+  unlink(empty_fp)
+})
+
+test_that("No leading # in header produces warning", {
+  nohead_fp <- tempfile()
+  writeLines(c("SampleID\tA\tB", "w\tx\ty"), nohead_fp)
+  expect_warning(load.qiime.mapping.file(nohead_fp), "Header")
+  unlink(nohead_fp)
+})
+
+test_that("No header line produces warning", {
+  nohead_fp <- tempfile()
+  writeLines(c("a\tb\tc", "w\tx\ty"), nohead_fp)
+  expect_warning(load.qiime.mapping.file(nohead_fp), "Header")
+  unlink(nohead_fp)
+})
+
+test_that("Header but no values produces error", {
+  norows_fp <- tempfile()
+  writeLines(c("#SampleID\tA\tB", "#Comment"), norows_fp)
+  expect_error(load.qiime.mapping.file(norows_fp), "line")
+  unlink(norows_fp)
+})
+
 
 context("Taxon table")
 
