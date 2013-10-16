@@ -168,7 +168,8 @@
   # read the rest of the table
   datatable <- read.table(filepath, sep='\t',
                           skip=header.index, comment.char='#', quote='"',
-                          header=FALSE, row.names=1, check.names=FALSE)
+                          header=FALSE, row.names=1, check.names=FALSE,
+                          strip.white=TRUE)
   
   # set column names using header
   colnames(datatable) <- header[-1]
@@ -199,32 +200,47 @@
   # for each line, obtain the number of tab-delimited columns
   linecount <- 0
   start.character <- '#'
+  f <- file(filepath,'r') # open file in read mode
   while(start.character == '#'){
+    line <- readLines(f, n=1)
+    # readLines returns a zero-length character vector at the end of the file.
+    # EOF in this loop means that there are either no non-comment lines or no
+    # lines at all.  Either way, we cannot determine the header index, so this
+    # is an error and we exit immediately.
+    if (length(line) == 0) {
+      close(f)
+      if (linecount == 0) {
+        stop("File is empty.")
+      } else {
+        stop("File must have at least one line that is not a comment (#).")
+      }
+    }
     linecount <- linecount + 1
-    f <- file(filepath,'r') # open file in read mode
-    line <- scan(f,what='character',skip=linecount-1,nlines=1, sep='\t', quiet=TRUE)
-    close(f)
+    cols <- strsplit(line, "\t")[[1]]
     # ncolumns is the number of entries in this line
     # not including trailing empties
-    ncolumns <- max(which(sapply(line,nchar) > 0))
+    ncolumns <- max(which(sapply(cols, nchar) > 0))
     ncolumns.per.line <- c(ncolumns.per.line, ncolumns)
-    start.character <- substring(line[1],1,1)
+    start.character <- substring(line, 1, 1)
   }
+  close(f)
   # first non-comment line gives the number of columns
   C <- ncolumns.per.line[linecount]
-  if(linecount == 1){
-    # if there are no comment lines, then the first line is the header
+  if (linecount == 0) {
+    # No lines in the file, header index is 0
+    header.index <- 0
+  } else if (linecount == 1) {
+    # If there are no comment lines, then the first line is the header.
+    warning("Header line should be commented.")
     header.index <- 1
+  } else if (any(ncolumns.per.line[-linecount] == C)) {
+    # If there is a comment line with the correct number of columns, then it is
+    # the header.
+    header.index <- max(which(ncolumns.per.line[-linecount] == C))
   } else {
-    if(any(ncolumns.per.line[-linecount] == C)){
-      # if there is a comment line with the correct number of columns,
-      # it is the header
-      header.index <- max(which(ncolumns.per.line[-linecount] == C))
-    } else {
-      # if there is no comment line with the correct number of columns,
-      # the first non-comment line is the header
-      header.index <- linecount
-    }
+    # If there is no comment line with the correct number of columns, then the
+    # first non-comment line is the header. Should we issue a warning?
+    header.index <- linecount
   }
   return(header.index)
 }
