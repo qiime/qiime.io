@@ -58,6 +58,19 @@ test_that("Whitespace is stripped from fields in mapping file", {
   unlink(map_fp)
 })
 
+test_that("Whitespace is stripped from column names in mapping file", {
+  map_fp <- tempfile()
+  writeLines(c("#SampleID\t A\tB C ", "w\tx\ty"), map_fp)
+  
+  expected_df <- data.frame("x", "y")
+  rownames(expected_df) <- "w"
+  colnames(expected_df) <- c("A", "B C")
+  
+  expect_equal(load.qiime.mapping.file(map_fp), expected_df)
+  
+  unlink(map_fp)
+})
+
 test_that("Comments are ignored in mapping file", {
   map_fp <- tempfile()
   writeLines(c("#SampleID\tA\tB", "# Comment 1", "w\tx\ty", "#C2"), map_fp)

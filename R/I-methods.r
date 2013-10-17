@@ -161,7 +161,7 @@
   # read the header
   f <- file(filepath, 'r')
   header <- scan(filepath, what='character', sep='\t', comment.char='',
-                 skip=header.index-1, quote='"',
+                 skip=header.index-1, quote='"', strip.white=TRUE,
                  nlines=1, quiet=TRUE)
   # Close the connection
   close(f)
